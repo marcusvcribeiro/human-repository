@@ -1,7 +1,6 @@
 import pyautogui
 import time
 import random
-import pytesseract
 import cv2
 import numpy as np
 from PIL import Image
@@ -69,7 +68,7 @@ def simular_codigo_vs_code():
     pyautogui.press('enter')
     esperar(2, 5)
 
-# --- VISÃO COMPUTACIONAL ---
+# --- VISÃO COMPUTACIONAL (IMAGEM ALVO) ---
 def encontrar_elemento_na_tela(imagem_alvo_path):
     screenshot = pyautogui.screenshot()
     screenshot_np = np.array(screenshot)
@@ -80,12 +79,6 @@ def encontrar_elemento_na_tela(imagem_alvo_path):
     if max_val > 0.8:
         return max_loc
     return None
-
-def extrair_texto_tela():
-    screenshot = pyautogui.screenshot()
-    texto = pytesseract.image_to_string(screenshot)
-    print("📄 Texto na tela:", texto)
-    return texto
 
 # --- POSICIONAMENTO INICIAL ---
 print("Posicione o mouse sobre o ícone do VS Code em 5 segundos...")
@@ -119,9 +112,10 @@ while True:
     abrir_url_em_aba(url)
     interagir_com_site()
 
-    texto = extrair_texto_tela()
-    if "Erro" in texto or "404" in texto:
-        print("⚠️ Erro detectado na tela! Recarregando...")
-        pyautogui.press('f5')
+    # Verifica se botao_salvar.png aparece na tela
+    local = encontrar_elemento_na_tela("botao_salvar.png")
+    if local:
+        print("📍 Botão Salvar detectado na tela!")
+        clicar_com_duracao(local[0], local[1])
 
     esperar(TEMPO_MIN_ESPERA, TEMPO_MAX_ESPERA)
